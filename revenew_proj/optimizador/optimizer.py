@@ -42,13 +42,15 @@ class OptimizationModel:
         price_B = self.params["Price_Product_B"]
         prob += price_A * x_A + price_B * x_B, "Total_Revenue"
 
+        # Constraints
+        # Ensure that the total production time does not exceed available hours for each machine
         # Machine 1 constraint
         a1 = self.params["Product_A_Production_Time_Machine_1"]
         b1 = self.params["Product_B_Production_Time_Machine_1"]
         cap1 = self.params["Machine_1_Available_Hours"]
         prob += a1 * x_A + b1 * x_B <= cap1, "Machine_1_Constraint"
 
-        # Machine 2 constraint (optional)
+        # Machine 2 constraint
         a2 = self.params["Product_A_Production_Time_Machine_2"]
         b2 = self.params["Product_B_Production_Time_Machine_2"]
         cap2 = self.params["Machine_2_Available_Hours"]
