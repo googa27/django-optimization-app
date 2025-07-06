@@ -21,7 +21,14 @@ class OptimizationModel:
         self.params = params
 
     def solve(self) -> dict:
-        """Solves the production optimization problem using linear programming."""
+        """Solves the production optimization problem using linear programming.
+        Returns:
+            dict: A dictionary containing the optimization results, including:
+                - 'status': The status of the optimization (e.g., "Optimal", "Infeasible").
+                - 'Product_A': The optimal quantity of Product A to produce.
+                - 'Product_B': The optimal quantity of Product B to produce.
+                - 'Total_Revenue': The total revenue from the optimal production plan.
+        """
         # Create the problem
         prob = LpProblem("Production_Optimization", LpMaximize)
 
@@ -41,12 +48,7 @@ class OptimizationModel:
         cap1 = self.params["Machine_1_Available_Hours"]
         prob += a1 * x_A + b1 * x_B <= cap1, "Machine_1_Constraint"
 
-        # Optional: Add Machine 2 constraints if available
-        # if all(k in self.params for k in [
-        #     "Product_A_Production_Time_Machine_2",
-        #     "Product_B_Production_Time_Machine_2",
-        #     "Machine_2_Available_Hours"
-        # ]):
+        # Machine 2 constraint (optional)
         a2 = self.params["Product_A_Production_Time_Machine_2"]
         b2 = self.params["Product_B_Production_Time_Machine_2"]
         cap2 = self.params["Machine_2_Available_Hours"]

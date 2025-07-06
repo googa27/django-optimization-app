@@ -1,22 +1,21 @@
-{% load static %}
+{% extends "optimizador/base.html" %}
+{% block title %}Upload CSV{% endblock %}
+{% block content %}
+  <h1 class="mb-4">Upload Optimization Data</h1>
 
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Optimization</title>
-  <link rel="stylesheet" href="{% static 'optimizador/styles.css' %}">
-</head>
+  <form method="post" enctype="multipart/form-data" class="mb-3">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Upload</button>
+  </form>
 
-<body>
-<h1>Upload Optimization Parameters</h1>
+  {% for message in messages %}
+    <div class="alert alert-danger" role="alert">{{ message }}</div>
+  {% endfor %}
+{% endblock %}
 
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Upload</button>
-</form>
-
-{% for message in messages %}
-  <p style="color: red;">{{ message }}</p>
-{% endfor %}
+{% block extra_scripts %}
+  <script>
+    // Optional: Add any JavaScript you need here
+  </script>
+{% endblock %}

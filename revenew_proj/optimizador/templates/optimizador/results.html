@@ -1,38 +1,42 @@
-{% load static %}
+{% extends "optimizador/base.html" %}
+{% block title %}Optimization Results{% endblock %}
 
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Optimization</title>
-  <link rel="stylesheet" href="{% static 'optimizador/styles.css' %}">
-</head>
+{% block content %}
+  <h1 class="mb-4">Optimization Results</h1>
 
-<body>
-<h1>Optimization Result</h1>
+  {% if result.error %}
+    <div class="alert alert-danger">
+      {{ result.error }}
+    </div>
+  {% else %}
+    <ul class="list-group mb-4">
+      <li class="list-group-item">
+        <strong>Status:</strong> {{ result.status }}
+      </li>
+      <li class="list-group-item">
+        <strong>Product A (units):</strong> {{ result.Product_A }}
+      </li>
+      <li class="list-group-item">
+        <strong>Product B (units):</strong> {{ result.Product_B }}
+      </li>
+      <li class="list-group-item">
+        <strong>Total Revenue:</strong> ${{ result.Total_Revenue }}
+      </li>
+    </ul>
 
-{% if result.error %}
-  <p style="color: red;">{{ result.error }}</p>
-{% else %}
-  <ul>
-    <li><strong>Status:</strong> {{ result.status }}</li>
-    <li><strong>Product A (units):</strong> {{ result.Product_A }}</li>
-    <li><strong>Product B (units):</strong> {{ result.Product_B }}</li>
-    <li><strong>Total Revenue:</strong> ${{ result.Total_Revenue }}</li>
-  </ul>
-{% endif %}
+    {% if result.plot %}
+      <h2>Chart</h2>
+      <img src="{{ result.plot }}" alt="Optimization Chart" class="img-fluid border rounded mb-4">
+    {% endif %}
+  {% endif %}
 
-<a href="{% url 'upload' %}">Try another file</a>
-
-{% if messages %}
-  <ul>
-    {% for message in messages %}
-      <li style="color: red;">{{ message }}</li>
-    {% endfor %}
-  </ul>
-{% endif %}
-{% if result.error %}
-  <p style="color: red;">Please check the uploaded file and try again.</p>
-{% else %}
-  <p>Optimization completed successfully!</p>
-{% endif %}
+  <!-- ✅ Centered and nicely styled button -->
+  <div class="d-flex justify-content-center">
+    <a href="{% url 'upload' %}" class="btn btn-secondary px-4 py-2">Try Another File</a>
+  </div>
+{% endblock %}
+{% block extra_scripts %}
+  <script>
+    // Optional: Add any JavaScript you need here
+  </script>
+{% endblock %}
