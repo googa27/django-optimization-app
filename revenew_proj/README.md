@@ -51,6 +51,17 @@ You can now:
 
 ---
 
+# 🧪 Run Tests
+To execute the unit and integration tests for the application, use Django's built-in test runner:
+
+```Bash
+python manage.py test optimizador
+```
+
+This command will run all tests located within the optimizador app, ensuring the correctness of the data loading, optimization model, and view logic.
+
+---
+
 # 🧪 Run from the command line (no web)
 
 ```bash
@@ -98,3 +109,8 @@ revenew_proj/
 |-------------------------------------|-------------------------------------|----------------------------|-------------------------------------|-------------------------------------|----------------------------|------------------|------------------|
 | 1.5                                 | 1.0                                 | 8                          | 2.0                                 | 1.5                                 | 10                         | 100              | 80               |
 
+Make sure that:
+- All columns are present
+- All values are numeric
+- There are no negative values
+- The input contains only one row
