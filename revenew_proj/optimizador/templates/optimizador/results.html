@@ -1,0 +1,38 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Optimization</title>
+  <link rel="stylesheet" href="{% static 'optimizador/styles.css' %}">
+</head>
+
+<body>
+<h1>Optimization Result</h1>
+
+{% if result.error %}
+  <p style="color: red;">{{ result.error }}</p>
+{% else %}
+  <ul>
+    <li><strong>Status:</strong> {{ result.status }}</li>
+    <li><strong>Product A (units):</strong> {{ result.Product_A }}</li>
+    <li><strong>Product B (units):</strong> {{ result.Product_B }}</li>
+    <li><strong>Total Revenue:</strong> ${{ result.Total_Revenue }}</li>
+  </ul>
+{% endif %}
+
+<a href="{% url 'upload' %}">Try another file</a>
+
+{% if messages %}
+  <ul>
+    {% for message in messages %}
+      <li style="color: red;">{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+{% if result.error %}
+  <p style="color: red;">Please check the uploaded file and try again.</p>
+{% else %}
+  <p>Optimization completed successfully!</p>
+{% endif %}

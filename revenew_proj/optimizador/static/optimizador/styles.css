@@ -1,0 +1,150 @@
+:root {
+    --color_0: 255, 255, 255;
+    --color_1: 255, 255, 255;
+    --color_2: 0, 0, 0;
+    --color_3: 237, 28, 36;
+    --color_4: 0, 136, 203;
+    --color_5: 255, 203, 5;
+    --color_6: 114, 114, 114;
+    --color_7: 176, 176, 176;
+    --color_8: 255, 255, 255;
+    --color_9: 114, 114, 114;
+    --color_10: 176, 176, 176;
+    --color_11: 255, 255, 255;
+    --color_12: 250, 252, 255;
+    --color_13: 137, 137, 176;
+    --color_14: 77, 77, 136;
+    --color_15: 77, 77, 136;
+    --color_16: 127, 49, 49;
+    --color_17: 190, 74, 74;
+    --color_18: 54, 102, 227;
+    --color_19: 18, 18, 96;
+    --color_20: 252, 225, 225;
+    --color_21: 68, 78, 116;
+    --color_22: 102, 117, 173;
+    --color_23: 147, 20, 249;
+    --color_24: 193, 204, 243;
+    --color_25: 218, 223, 242;
+    --color_26: 15, 61, 71;
+    --color_27: 30, 121, 141;
+    --color_28: 45, 182, 212;
+    --color_29: 137, 210, 226;
+    --color_30: 177, 229, 241;
+    --color_31: 8, 33, 82;
+    --color_32: 16, 65, 165;
+    --color_33: 24, 98, 247;
+    --color_34: 137, 174, 250;
+    --color_35: 176, 202, 252;
+    --color_36: 255, 255, 255;
+    --color_37: 18, 18, 96;
+    --color_38: 196, 196, 215;
+    --color_39: 137, 137, 176;
+    --color_40: 77, 77, 136;
+    --color_41: 54, 102, 227;
+    --color_42: 147, 20, 249;
+    --color_43: 18, 18, 96;
+    --color_44: 250, 252, 255;
+    --color_45: 18, 18, 96;
+    --color_46: 18, 18, 96;
+    --color_47: 77, 77, 136;
+    --color_48: 54, 102, 227;
+    --color_49: 250, 252, 255;
+    --color_50: 18, 18, 96;
+    --color_51: 255, 235, 255;
+    --color_52: 255, 235, 255;
+    --color_53: 54, 102, 227;
+    --color_54: 137, 137, 176;
+    --color_55: 137, 137, 176;
+    --color_56: 255, 255, 255;
+    --color_57: 250, 252, 255;
+    --color_58: 54, 102, 227;
+    --color_59: 54, 102, 227;
+    --color_60: 54, 102, 227;
+    --color_61: 54, 102, 227;
+    --color_62: 255, 235, 255;
+    --color_63: 255, 255, 255;
+    --color_64: 137, 137, 176;
+    --color_65: 137, 137, 176;
+
+    --font_0: normal normal bold 80px / 1.4em poppins-extralight, poppins, sans-serif;
+    --font_1: normal normal normal 16px / 1.4em din-next-w01-light, sans-serif;
+    --font_2: normal normal normal 44px / 1.4em poppins-semibold, poppins, sans-serif;
+    --font_3: normal normal normal 30px / 1.4em poppins-semibold, poppins, sans-serif;
+    --font_4: normal normal normal 30px / 1.4em 'open sans', sans-serif;
+    --font_5: normal normal normal 24px / 1.4em barlow-medium, barlow, sans-serif;
+    --font_6: normal normal normal 18px / 1.4em poppins-semibold, poppins, sans-serif;
+    --font_7: normal normal normal 18px / 1.4em 'open sans', sans-serif;
+    --font_8: normal normal normal 16px / 1.4em 'open sans', sans-serif;
+    --font_9: normal normal normal 14px / 1.4em 'open sans', sans-serif;
+    --font_10: normal normal normal 12px / 1.4em din-next-w01-light, sans-serif;
+
+    --wst-button-color-fill-primary: rgb(var(--color_48));
+    --wst-button-color-border-primary: rgb(var(--color_49));
+    --wst-button-color-text-primary: rgb(var(--color_50));
+    --wst-button-color-fill-primary-hover: rgb(var(--color_51));
+    --wst-button-color-border-primary-hover: rgb(var(--color_52));
+    --wst-button-color-text-primary-hover: rgb(var(--color_53));
+    --wst-button-color-fill-primary-disabled: rgb(var(--color_54));
+    --wst-button-color-border-primary-disabled: rgb(var(--color_55));
+    --wst-button-color-text-primary-disabled: rgb(var(--color_56));
+    --wst-button-color-fill-secondary: rgb(var(--color_57));
+    --wst-button-color-border-secondary: rgb(var(--color_58));
+    --wst-button-color-text-secondary: rgb(var(--color_59));
+    --wst-button-color-fill-secondary-hover: rgb(var(--color_60));
+    --wst-button-color-border-secondary-hover: rgb(var(--color_61));
+    --wst-button-color-text-secondary-hover: rgb(var(--color_62));
+    --wst-button-color-fill-secondary-disabled: rgb(var(--color_63));
+    --wst-button-color-border-secondary-disabled: rgb(var(--color_64));
+    --wst-button-color-text-secondary-disabled: rgb(var(--color_65));
+
+    --wst-color-text-primary: rgb(var(--color_15));
+    --wst-color-text-secondary: rgb(var(--color_14));
+
+    --wst-color-fill-background-primary: rgb(var(--color_11));
+    --wst-color-fill-background-secondary: rgb(var(--color_12));
+
+    --wst-font-style-h2: var(--font_2);
+    --wst-font-style-h3: var(--font_3);
+    --wst-font-style-h4: var(--font_4);
+    --wst-font-style-h5: var(--font_5);
+    --wst-font-style-h6: var(--font_6);
+
+    --wst-font-style-body-large: var(--font_7);
+    --wst-font-style-body-medium: var(--font_8);
+    --wst-font-style-body-small: var(--font_9);
+    --wst-font-style-body-x-small: var(--font_10);
+}
+
+body {
+    font-family: var(--wst-font-style-body-small);
+    background-color: rgb(var(--wst-color-fill-background-primary));
+    color: rgb(var(--wst-color-text-primary));
+    margin: 2rem;
+}
+
+h1 {
+    font-family: poppins-extralight, poppins, sans-serif;
+    color: rgb(var(--wst-font-style-h2));
+    font-style: normal;
+}
+
+h2 {
+    font-family: var(--wst-font-style-h2);
+    color: rgb(var(--wst-color-text-primary));
+    font-style: normal;
+}
+
+button {
+    font-family: var(--wst-font-style-body-small);
+    padding: 0.5rem 1rem;
+    background-color: rgb(var(--color_42));
+    color: rgb(var(--color_11));
+    border: none;
+    border-radius: 4px;
+}
+
+ul {
+    font-family: poppins-extralight, poppins, sans-serif;
+    list-style: none;
+    padding-left: 0;
+}
