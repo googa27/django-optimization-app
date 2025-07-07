@@ -150,8 +150,8 @@ class ResultsHandler:
         ax.plot(xA_opt, xB_opt, 'o', color='gold', markersize=10,
                 label=f'Optimum: A={xA_opt:.2f}, B={xB_opt:.2f}', markeredgecolor='black')
 
-        ax.set_xlabel('Units of Producto A (xA)')
-        ax.set_ylabel('Units of Producto B (xB)')
+        ax.set_xlabel('Units of Product A (xA)')
+        ax.set_ylabel('Units of Product B (xB)')
         ax.set_title(
             'Feasible Region and Optimal Solution  for Production Optimization')
         ax.set_xlim(0, max_x)
