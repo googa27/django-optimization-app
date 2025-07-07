@@ -25,17 +25,25 @@
     </ul>
 
     {% if result.plot %}
-      <h2>Chart</h2>
-      <img src="{{ result.plot }}" alt="Optimization Chart" class="img-fluid border rounded mb-4">
+      <h2>Production Quantities Chart</h2>
+      <img src="{{ result.plot }}" alt="Production Quantities Chart" class="img-fluid border rounded mb-4">
     {% endif %}
+
+    {% if result.feasible_region_plot %}
+      <h2 class="mt-5 mb-3">Feasible Region and Optimal Solution</h2>
+      <img src="{{ result.feasible_region_plot }}" alt="Feasible Region Plot" class="img-fluid border rounded mb-4">
+    {% endif %}
+
   {% endif %}
 
   <!-- ✅ Centered and nicely styled button -->
-  <div class="d-flex justify-content-center">
+  <div class="d-flex justify-content-center mt-4">
     <a href="{% url 'upload' %}" class="btn btn-secondary px-4 py-2">Try Another File</a>
   </div>
 {% endblock %}
+
 {% block extra_scripts %}
+  {# Removed Chart.js CDN and JavaScript for feasible region plot #}
   <script>
     // Optional: Add any JavaScript you need here
   </script>

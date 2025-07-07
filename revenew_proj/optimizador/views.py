@@ -26,7 +26,8 @@ def upload_view(request):
                 solution = model.solve()
 
                 # --- STEP 3: Format the result for display ---
-                formatter = ResultsHandler(solution)
+                # MODIFICATION HERE: Pass 'params' to ResultsHandler
+                formatter = ResultsHandler(solution, params)
                 result = formatter.format()
 
                 # --- STEP 4: Render the results page ---
