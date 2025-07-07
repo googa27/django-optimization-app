@@ -1,24 +1,77 @@
 {% extends "optimizador/base.html" %}
-{% block title %}Upload CSV{% endblock %}
+{% load static %} {# Added: Load the static files tag library #}
+{% block title %}Upload Optimization Data{% endblock %}
+
 {% block content %}
-  <h1 class="mb-4">Upload Optimization Data</h1>
+  <div class="container mt-5">
+    <div class="card shadow-lg p-4">
+      <h1 class="mb-4 text-center">Upload Optimization Data</h1>
+      <p class="text-muted mb-4 text-center">
+        Please upload a CSV file containing the parameters for the optimization model.
+        Ensure the file follows the format specified below.
+      </p>
 
-  <form method="post" enctype="multipart/form-data" class="mb-3">
-    {% csrf_token %}
-    <div class="mb-3">
-      <label for="id_csv_file" class="form-label">Upload CSV file</label>
-      <input type="file" name="csv_file" class="form-control" id="id_csv_file" aria-label="Choose CSV file">
+      <form method="post" enctype="multipart/form-data" class="mb-3">
+        {% csrf_token %}
+
+        <!-- CSV Format Example Section -->
+        <div class="alert alert-info border-start border-info border-4 ps-3 py-3 mb-4" role="alert">
+          <h3 class="h5 mb-2 d-flex align-items-center">
+            <span class="me-2">&#x1F4C4;</span> Required CSV File Format
+          </h3>
+          <p class="text-info-emphasis mb-3">
+            Your CSV file must contain <strong>exactly one row</strong> of data with the following columns:
+          </p>
+          <div class="table-responsive bg-white rounded-3 border border-info-subtle p-2">
+            <table class="table table-sm table-hover mb-0">
+              <thead>
+                <tr class="table-info">
+                  <th scope="col" class="py-2 px-3 text-start">Column</th>
+                  <th scope="col" class="py-2 px-3 text-start">Description</th>
+                  <th scope="col" class="py-2 px-3 text-start">Example Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="py-2 px-3 border-bottom font-monospace">Product_A_Production_Time_Machine_1</td><td class="py-2 px-3 border-bottom">Time A on Machine 1</td><td class="py-2 px-3 border-bottom">10</td></tr>
+                <tr><td class="py-2 px-3 border-bottom font-monospace">Product_B_Production_Time_Machine_1</td><td class="py-2 px-3 border-bottom">Time B on Machine 1</td><td class="py-2 px-3 border-bottom">15</td></tr>
+                <tr><td class="py-2 px-3 border-bottom font-monospace">Machine_1_Available_Hours</td><td class="py-2 px-3 border-bottom">Available Hours Machine 1</td><td class="py-2 px-3 border-bottom">600</td></tr>
+                <tr><td class="py-2 px-3 border-bottom font-monospace">Product_A_Production_Time_Machine_2</td><td class="py-2 px-3 border-bottom">Time A on Machine 2</td><td class="py-2 px-3 border-bottom">5</td></tr>
+                <tr><td class="py-2 px-3 border-bottom font-monospace">Product_B_Production_Time_Machine_2</td><td class="py-2 px-3 border-bottom">Time B on Machine 2</td><td class="py-2 px-3 border-bottom">8</td></tr>
+                <tr><td class="py-2 px-3 border-bottom font-monospace">Machine_2_Available_Hours</td><td class="py-2 px-3 border-bottom">Available Hours Machine 2</td><td class="py-2 px-3 border-bottom">480</td></tr>
+                <tr><td class="py-2 px-3 border-bottom font-monospace">Price_Product_A</td><td class="py-2 px-3 border-bottom">Selling Price Product A</td><td class="py-2 px-3 border-bottom">25</td></tr>
+                <tr><td class="py-2 px-3 border-bottom font-monospace">Price_Product_B</td><td class="py-2 px-3 border-bottom">Selling Price Product B</td><td class="py-2 px-3 border-bottom">30</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- File Upload Area -->
+        <div class="mb-4">
+          <label for="id_csv_file" class="form-label">Select CSV file:</label>
+          <input id="id_csv_file" name="csv_file" type="file" class="form-control" accept=".csv">
+        </div>
+        <button type="submit" class="btn btn-primary w-100 py-2">
+          Optimize
+        </button>
+      </form>
+
+      {% for message in messages %}
+        <div class="alert alert-danger mt-4" role="alert">
+          <strong>Error:</strong>
+          <span>{{ message }}</span>
+        </div>
+      {% endfor %}
     </div>
-    <button type="submit" class="btn btn-primary">Upload</button>
-  </form>
-
-  {% for message in messages %}
-    <div class="alert alert-danger" role="alert">{{ message }}</div>
-  {% endfor %}
+  </div>
 {% endblock %}
 
 {% block extra_scripts %}
   <script>
-    // Optional: Add any JavaScript you need here
+    const fileInput = document.getElementById('id_csv_file');
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) {
+        console.log('Selected file:', fileInput.files[0].name);
+      }
+    });
   </script>
 {% endblock %}

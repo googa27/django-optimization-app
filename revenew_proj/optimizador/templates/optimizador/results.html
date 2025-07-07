@@ -2,48 +2,80 @@
 {% block title %}Optimization Results{% endblock %}
 
 {% block content %}
-  <h1 class="mb-4">Optimization Results</h1>
+  <div class="container mt-5">
+    <div class="card shadow-lg p-4">
+      <h1 class="mb-4 text-center">Optimization Results</h1>
 
-  {% if result.error %}
-    <div class="alert alert-danger">
-      {{ result.error }}
+      {% if result.error %}
+        <div class="alert alert-danger">
+          {{ result.error }}
+        </div>
+        <div class="d-flex justify-content-center mt-4">
+          <a href="{% url 'upload' %}" class="btn btn-secondary px-4 py-2">Try Another File</a>
+        </div>
+      {% else %}
+        <p class="text-muted mb-4 text-center">
+          Here are the optimal production quantities and the maximum daily revenue based on your input parameters.
+        </p>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+          <div class="col">
+            <div class="card h-100 text-center bg-light border-primary">
+              <div class="card-body">
+                <h5 class="card-title text-primary">Product A (units)</h5>
+                <p class="card-text fs-2 fw-bold text-dark">{{ result.Product_A }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card h-100 text-center bg-light border-success">
+              <div class="card-body">
+                <h5 class="card-title text-success">Product B (units)</h5>
+                <p class="card-text fs-2 fw-bold text-dark">{{ result.Product_B }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card h-100 text-center bg-light border-info">
+              <div class="card-body">
+                <h5 class="card-title text-info">Total Revenue</h5>
+                <p class="card-text fs-2 fw-bold text-dark">${{ result.Total_Revenue }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% if result.plot %}
+          <h2 class="mt-5 mb-3 text-center">Production Quantities Chart</h2>
+          <p class="text-muted mb-4 text-center">
+            This chart visually compares the optimal number of units to produce for Product A and Product B.
+          </p>
+          <div class="d-flex justify-content-center mb-5">
+            <img src="{{ result.plot }}" alt="Production Quantities Chart" class="img-fluid border rounded shadow-sm" style="max-width: 600px;">
+          </div>
+        {% endif %}
+
+        {% if result.feasible_region_plot %}
+          <h2 class="mt-5 mb-3 text-center">Feasible Region and Optimal Solution</h2>
+          <p class="text-muted mb-4 text-center">
+            This plot illustrates the constraints (machine capacities) and the feasible region,
+            along with the optimal production point that maximizes revenue.
+          </p>
+          <div class="d-flex justify-content-center mb-5">
+            <img src="{{ result.feasible_region_plot }}" alt="Feasible Region Plot" class="img-fluid border rounded shadow-sm" style="max-width: 800px;">
+          </div>
+        {% endif %}
+
+        <!-- Centered and nicely styled button -->
+        <div class="d-flex justify-content-center mt-5">
+          <a href="{% url 'upload' %}" class="btn btn-primary btn-lg px-5 py-3 shadow-sm">Try Another File</a>
+        </div>
+      {% endif %}
     </div>
-  {% else %}
-    <ul class="list-group mb-4">
-      <li class="list-group-item">
-        <strong>Status:</strong> {{ result.status }}
-      </li>
-      <li class="list-group-item">
-        <strong>Product A (units):</strong> {{ result.Product_A }}
-      </li>
-      <li class="list-group-item">
-        <strong>Product B (units):</strong> {{ result.Product_B }}
-      </li>
-      <li class="list-group-item">
-        <strong>Total Revenue:</strong> ${{ result.Total_Revenue }}
-      </li>
-    </ul>
-
-    {% if result.plot %}
-      <h2>Production Quantities Chart</h2>
-      <img src="{{ result.plot }}" alt="Production Quantities Chart" class="img-fluid border rounded mb-4">
-    {% endif %}
-
-    {% if result.feasible_region_plot %}
-      <h2 class="mt-5 mb-3">Feasible Region and Optimal Solution</h2>
-      <img src="{{ result.feasible_region_plot }}" alt="Feasible Region Plot" class="img-fluid border rounded mb-4">
-    {% endif %}
-
-  {% endif %}
-
-  <!-- ✅ Centered and nicely styled button -->
-  <div class="d-flex justify-content-center mt-4">
-    <a href="{% url 'upload' %}" class="btn btn-secondary px-4 py-2">Try Another File</a>
   </div>
 {% endblock %}
 
 {% block extra_scripts %}
-  {# Removed Chart.js CDN and JavaScript for feasible region plot #}
   <script>
     // Optional: Add any JavaScript you need here
   </script>
