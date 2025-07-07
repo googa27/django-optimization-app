@@ -76,31 +76,6 @@ Total Revenue: $560.00
 ```
 ---
 
-# 📁 File Structure
-```csharp
-revenew_proj/
-├── manage.py
-├── main.py
-├── README.md
-├── requirements.txt
-├── optimizador/
-│   ├── dataloader.py
-│   ├── optimizer.py
-│   ├── results.py
-│   ├── views.py
-│   ├── urls.py
-│   ├── forms.py
-│   ├── templates/
-│   │   └── optimizador/
-│   │       ├── base.html
-│   │       ├── upload.html
-│   │       └── results.html
-│   └── static/
-│       └── optimizador/
-│           └── styles.css
-
-```
-
 ---
 
 # ✅ CSV Format Example
