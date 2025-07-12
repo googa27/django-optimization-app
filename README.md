@@ -1,4 +1,4 @@
-# Revenew Optimization App
+# Revenue Optimization App
 
 This project solves a simple production optimization problem using linear programming, based on user-uploaded CSV data. It includes:
 
