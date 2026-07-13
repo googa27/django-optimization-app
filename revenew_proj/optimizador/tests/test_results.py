@@ -1,10 +1,18 @@
 import unittest
-import base64
 from optimizador.results import ResultsHandler
-import matplotlib.pyplot as plt
 
 
 class ResultsHandlerTest(unittest.TestCase):
+
+    def setUp(self):
+        self.params = {
+            'Product_A_Production_Time_Machine_1': 10,
+            'Product_B_Production_Time_Machine_1': 15,
+            'Machine_1_Available_Hours': 600,
+            'Product_A_Production_Time_Machine_2': 5,
+            'Product_B_Production_Time_Machine_2': 8,
+            'Machine_2_Available_Hours': 480,
+        }
 
     def test_format_optimal_solution(self):
         """Test formatting of an optimal solution."""
@@ -15,7 +23,7 @@ class ResultsHandlerTest(unittest.TestCase):
             'Total_Revenue': 5000,
             'LpStatus': 1  # Simulating pulp's internal status code for optimal
         }
-        handler = ResultsHandler(optimal_solution)
+        handler = ResultsHandler(optimal_solution, self.params)
         formatted_result = handler.format()
 
         self.assertIsInstance(formatted_result, dict)
@@ -38,7 +46,7 @@ class ResultsHandlerTest(unittest.TestCase):
             'Total_Revenue': None,
             'LpStatus': -1  # Simulating pulp's internal status code for infeasible
         }
-        handler = ResultsHandler(infeasible_solution)
+        handler = ResultsHandler(infeasible_solution, self.params)
         formatted_result = handler.format()
 
         self.assertIsInstance(formatted_result, dict)

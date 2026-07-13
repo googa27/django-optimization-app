@@ -1,7 +1,6 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from unittest.mock import patch, MagicMock
-from io import StringIO
+from unittest.mock import patch
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -47,7 +46,7 @@ class UploadViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'optimizador/upload.html')
         # Check for text on the form page
-        self.assertContains(response, 'Upload CSV')
+        self.assertContains(response, 'Upload Optimization Data')
 
     # MODIFICATION HERE: Patch DataLoader in 'optimizador.views'
 

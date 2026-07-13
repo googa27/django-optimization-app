@@ -1,28 +1,31 @@
-from django import forms
-# This might be useful for custom validators, but not directly for this fix.
-from django.core.exceptions import ValidationError
+from django.test import SimpleTestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+
+from optimizador.forms import UploadForm, MAX_UPLOAD_BYTES
 
 
-class UploadForm(forms.Form):
-    '''Form for uploading a CSV file containing production parameters.
-    This form includes a single file field for the CSV upload.
-    Attributes:
-        csv_file (FileField): The file field for uploading the CSV.
-    '''
-    csv_file = forms.FileField(label="Upload CSV")
+class UploadFormBoundaryTest(SimpleTestCase):
+    def test_rejects_non_csv_extension(self):
+        upload = SimpleUploadedFile("params.txt", b"x,y\n1,2\n", content_type="text/plain")
+        form = UploadForm(files={"csv_file": upload})
 
-    def clean_csv_file(self):
-        """
-        Custom clean method for csv_file.
-        Ensures that the form itself does not invalidate an empty file,
-        as content validation is handled by DataLoader.
-        """
-        csv_file = self.cleaned_data['csv_file']
+        self.assertFalse(form.is_valid())
+        self.assertIn("Only .csv files are supported.", form.errors["csv_file"])
 
-        # If the file exists and has zero size, we allow it to pass form validation.
-        # The DataLoader will handle the actual content validation for emptiness or malformed data.
-        if csv_file.size == 0:
-            return csv_file
+    def test_rejects_unexpected_content_type(self):
+        upload = SimpleUploadedFile(
+            "params.csv", b"x,y\n1,2\n", content_type="application/x-msdownload"
+        )
+        form = UploadForm(files={"csv_file": upload})
 
-        # For non-empty files, return as is
-        return csv_file
+        self.assertFalse(form.is_valid())
+        self.assertIn("Uploaded file must be a CSV text file.", form.errors["csv_file"])
+
+    def test_rejects_oversized_upload(self):
+        upload = SimpleUploadedFile(
+            "params.csv", b"a" * (MAX_UPLOAD_BYTES + 1), content_type="text/csv"
+        )
+        form = UploadForm(files={"csv_file": upload})
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("CSV file is too large", form.errors["csv_file"][0])

@@ -49,6 +49,9 @@
         <div class="mb-4">
           <label for="id_csv_file" class="form-label">Select CSV file:</label>
           <input id="id_csv_file" name="csv_file" type="file" class="form-control" accept=".csv">
+          {% for error in form.csv_file.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+          {% endfor %}
         </div>
         <button type="submit" class="btn btn-primary w-100 py-2">
           Optimize
