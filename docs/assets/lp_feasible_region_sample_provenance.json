@@ -1,0 +1,38 @@
+{
+  "assets": [
+    "docs/assets/lp_feasible_region_sample_dark.png",
+    "docs/assets/lp_formulation_card_dark.svg"
+  ],
+  "old_readme_example": {
+    "Machine_1_Usage": 8.0,
+    "Machine_2_Usage": 11.0,
+    "Product_A": 4.0,
+    "Product_B": 2.0,
+    "status": "infeasible because Machine_2_Usage exceeds cap 10"
+  },
+  "optimizer_source": "revenew_proj/optimizador/optimizer.py",
+  "optimum": {
+    "Product_A": 0.0,
+    "Product_B": 6.666666666666667,
+    "Total_Revenue": 533.3333333333334
+  },
+  "reproducibility": "deterministic_from_tracked_fixture",
+  "script": "docs/scripts/generate_lp_readme_visual.py",
+  "script_sha256": "e029a850bc53b99762c44aeef4a90db5c17d6f25097f028a771a7b97f250d3a5",
+  "source_csv": "revenew_proj/optimization_problem_data.csv",
+  "source_csv_sha256": "49aab287d9e0a5a27db51797e0a0dcd00e6ca66549557ce575c4c042be32837e",
+  "vertices": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      6.666666666666667
+    ],
+    [
+      5.0,
+      0.0
+    ]
+  ]
+}
