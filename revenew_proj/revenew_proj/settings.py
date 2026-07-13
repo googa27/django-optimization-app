@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from urllib.parse import urlsplit
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -45,13 +46,58 @@ ALLOWED_HOSTS = [
     if host.strip()
 ]
 
+def _parse_csrf_trusted_origins(raw_origins: str) -> list[str]:
+    """Parse DJANGO_CSRF_TRUSTED_ORIGINS as origin URLs.
+
+    Django requires each CSRF trusted origin to include a scheme. For operator
+    convenience, bare host[:port] entries are treated as HTTPS origins. Values
+    that are not origins (unsupported schemes, paths, queries, fragments, or
+    credentials) fail during settings load with a focused configuration error.
+    """
+    trusted_origins: list[str] = []
+    for raw_origin in raw_origins.split(','):
+        origin = raw_origin.strip()
+        if not origin:
+            continue
+        if origin.startswith('//'):
+            raise ImproperlyConfigured(
+                'DJANGO_CSRF_TRUSTED_ORIGINS entries must be origins such as '
+                'https://example.com or bare host[:port] values.'
+            )
+        if '://' not in origin:
+            origin = f'https://{origin}'
+        try:
+            parsed = urlsplit(origin)
+            parsed.port
+        except ValueError as exc:
+            raise ImproperlyConfigured(
+                'DJANGO_CSRF_TRUSTED_ORIGINS entries must be valid http(s) '
+                'origins with optional numeric ports.'
+            ) from exc
+        if (
+            parsed.scheme not in {'http', 'https'}
+            or not parsed.netloc
+            or not parsed.hostname
+            or any(char.isspace() for char in origin)
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.path not in {'', '/'}
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise ImproperlyConfigured(
+                'DJANGO_CSRF_TRUSTED_ORIGINS entries must be http(s) origins '
+                'without paths, queries, fragments, or credentials.'
+            )
+        trusted_origins.append(origin.rstrip('/'))
+    return trusted_origins
+
+
 FILE_UPLOAD_MAX_MEMORY_SIZE = int(os.getenv('OPTIMIZADOR_MAX_UPLOAD_BYTES', '1048576'))
 DATA_UPLOAD_MAX_MEMORY_SIZE = FILE_UPLOAD_MAX_MEMORY_SIZE
-CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
-    for origin in os.getenv('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',')
-    if origin.strip()
-]
+CSRF_TRUSTED_ORIGINS = _parse_csrf_trusted_origins(
+    os.getenv('DJANGO_CSRF_TRUSTED_ORIGINS', '')
+)
 SECURE_SSL_REDIRECT = os.getenv(
     'DJANGO_SECURE_SSL_REDIRECT', 'False'
 ).lower() in {'1', 'true', 'yes'}

@@ -92,12 +92,13 @@
     "ai": {
       "primary_agent": "Hermes Agent",
       "context_file": "AGENTS.md",
-      "interaction": "AGENTS + deterministic Django management commands and capability notes; no MCP by default.",
+      "interaction": "AGENTS + deterministic Django management commands, the architecture checker, the pytest architecture suite, and capability notes; no MCP by default.",
       "capability_discovery": "AGENTS.md plus the architecture checker is the current discovery surface; add a deterministic CLI/capability manifest before new maintained runtime behavior.",
       "skills": "Use/update a repo or class-level Hermes skill for recurring non-trivial workflows",
       "plugin_mcp_policy": "deferred unless stable interfaces and measured multi-client/tool interoperability justify it",
       "declared_entrypoints": [
         "DJANGO_SECRET_KEY=test-secret python manage.py test optimizador.tests",
+        "uv run --with pytest python -m pytest tests/architecture",
         "python scripts/check_portfolio_architecture.py"
       ],
       "decision_ladder": [
@@ -137,9 +138,10 @@
     ],
     "commands": {
       "setup": "uv run --with-requirements requirements.txt python -c \"import django, pulp; print(django.get_version())\"",
-      "test": "cd revenew_proj && DJANGO_SECRET_KEY=test-secret uv run --with-requirements ../requirements.txt python manage.py test optimizador.tests",
+      "test": "cd revenew_proj && DJANGO_SECRET_KEY=test-secret uv run --with-requirements ../requirements.txt python manage.py test optimizador.tests && cd .. && uv run --with pytest python -m pytest tests/architecture",
       "lint": "No repository-wide lint command is currently declared; the architecture gate is blocking and a future modernization must add Ruff.",
-      "architecture": "python scripts/check_portfolio_architecture.py"
+      "architecture": "python scripts/check_portfolio_architecture.py",
+      "architecture_tests": "uv run --with pytest python -m pytest tests/architecture"
     },
     "ci_workflow": ".github/workflows/portfolio-architecture.yml",
     "mirror_source": "where pertinent"

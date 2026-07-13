@@ -52,9 +52,10 @@ Repository posture: Legacy/demo Django application; no production maturity claim
 ### Exact commands
 
 - Setup: `uv run --with-requirements requirements.txt python -c "import django, pulp; print(django.get_version())"`
-- Tests: `cd revenew_proj && DJANGO_SECRET_KEY=test-secret uv run --with-requirements ../requirements.txt python manage.py test optimizador.tests`
+- Tests: `cd revenew_proj && DJANGO_SECRET_KEY=*** uv run --with-requirements ../requirements.txt python manage.py test optimizador.tests && cd .. && uv run --with pytest python -m pytest tests/architecture`
 - Lint/format: `No repository-wide lint command is currently declared; the architecture gate is blocking and a future modernization must add Ruff.`
-- Portfolio architecture: `python scripts/check_portfolio_architecture.py`
+- Portfolio architecture checker: `python scripts/check_portfolio_architecture.py`
+- Portfolio architecture pytest: `uv run --with pytest python -m pytest tests/architecture`
 
 If a command is declared unavailable, the activation trigger and replacement command belong in `docs/ARCHITECTURE.yaml`; do not fabricate successful output.
 <!-- PORTFOLIO-CONSTITUTION:END -->

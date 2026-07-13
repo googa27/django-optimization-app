@@ -18,8 +18,10 @@ jobs:
           python-version: '3.12'
       - name: Validate portfolio architecture contract
         run: python scripts/check_portfolio_architecture.py
-      - name: Install app dependencies
-        run: python -m pip install -r requirements.txt
+      - name: Install app and test dependencies
+        run: python -m pip install -r requirements.txt pytest
+      - name: Run portfolio architecture pytest suite
+        run: python -m pytest tests/architecture
       - name: Run Django app tests
         run: DJANGO_SECRET_KEY=test-secret python manage.py test optimizador.tests
         working-directory: revenew_proj

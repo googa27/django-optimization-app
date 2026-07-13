@@ -29,7 +29,7 @@ Source of truth: `docs/ARCHITECTURE.yaml`. Tracking: [Project #24](https://githu
 
 ### Two-user design
 
-- AI: AGENTS + deterministic Django management commands and capability notes; no MCP by default.
+- AI: AGENTS + deterministic Django management commands, the architecture checker, the pytest architecture suite, and capability notes; no MCP by default.
 - Human/notebook: Typed optimization service API usable outside views and from notebooks; model value objects may use repr/eq/hash only when lawful.
 - Planned Python protocols: Immutable optimization inputs/results may use __repr__/value equality after typed domain extraction.; Solver execution, database access, and web effects remain named methods.
 - Core posture: No core coupling unless a general FPF optimization contract becomes a real consumer need.

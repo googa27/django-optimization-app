@@ -20,6 +20,21 @@ def test_portfolio_architecture_contract() -> None:
     assert result.returncode == 0, result.stdout + result.stderr
 
 
+def test_architecture_pytest_is_documented_and_run_by_ci() -> None:
+    contract = json.loads((ROOT / "docs" / "ARCHITECTURE.yaml").read_text())
+    command_text = "\n".join(contract["tests"]["commands"].values())
+    agents_text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    workflow_text = (ROOT / ".github" / "workflows" / "portfolio-architecture.yml").read_text(
+        encoding="utf-8"
+    )
+
+    assert "pytest" in command_text
+    assert "tests/architecture" in command_text
+    assert "pytest" in agents_text
+    assert "tests/architecture" in agents_text
+    assert "python -m pytest tests/architecture" in workflow_text
+
+
 def test_optimization_boundaries_are_recorded() -> None:
     contract = json.loads((ROOT / "docs" / "ARCHITECTURE.yaml").read_text())
     forbidden = "\n".join(contract["architecture"]["import_boundaries"]["forbidden"])
