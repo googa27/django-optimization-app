@@ -1,51 +1,36 @@
 import sys
 
-# Import from the app
+from django.core.exceptions import ValidationError
+
 from optimizador.dataloader import DataLoader
-from optimizador.optimizer import OptimizationModel
 from optimizador.results import ResultsHandler
+from optimizador.services import ProductionOptimizationService, ProductionParameters
 
 
-def run_optimization(csv_path):
-    """
-    Command-line interface for solving the optimization problem from a CSV file.
-
-    Usage:
-        python main.py optimization_problem_data.csv
-    Args:
-        csv_path (str): Path to the CSV file containing production parameters.
-    """
-
+def run_optimization(csv_path: str) -> int:
+    """Run the demo optimizer from a CSV file and return a process status code."""
     try:
-        # Open file for reading
-        with open(csv_path, 'rb') as f:
-            # STEP 1: Load data
-            loader = DataLoader(f)
-            params = loader.load()
+        with open(csv_path, "rb") as file_obj:
+            params = ProductionParameters.from_mapping(DataLoader(file_obj).load())
+        solution = ProductionOptimizationService().solve(params)
+        result = ResultsHandler(solution, params).format()
+    except (OSError, ValidationError, ValueError) as exc:
+        print("Error:", str(exc), file=sys.stderr)
+        return 1
 
-            # STEP 2: Solve optimization
-            model = OptimizationModel(params)
-            solution = model.solve()
+    if result.get("error"):
+        print("Error:", result["error"], file=sys.stderr)
+        return 1
 
-            # STEP 3: Format result
-            formatter = ResultsHandler(solution)
-            result = formatter.format()
-
-            # Print to console
-            if result.get("error"):
-                print("❌", result["error"])
-            else:
-                print("Optimization status:", result["status"])
-                print(f"Product A: {result['Product_A']}")
-                print(f"Product B: {result['Product_B']}")
-                print(f"Total Revenue: ${result['Total_Revenue']:.2f}")
-
-    except Exception as e:
-        print("Error:", str(e))
+    print("Optimization status:", result["status"])
+    print(f"Product A: {result['Product_A']}")
+    print(f"Product B: {result['Product_B']}")
+    print(f"Total Revenue: ${result['Total_Revenue']:.2f}")
+    return 0
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python main.py <csv_file>")
-    else:
-        run_optimization(sys.argv[1])
+        print("Usage: python main.py <csv_file>", file=sys.stderr)
+        sys.exit(2)
+    sys.exit(run_optimization(sys.argv[1]))

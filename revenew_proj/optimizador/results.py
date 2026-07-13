@@ -1,9 +1,28 @@
-from io import BytesIO
 import base64
+from collections.abc import Mapping
+from io import BytesIO
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np  # Import numpy for numerical operations
 mpl.use('Agg')  # Use 'Agg' backend for non-GUI environments
+
+
+def _as_legacy_solution(solution):
+    if isinstance(solution, Mapping):
+        return dict(solution)
+    return {
+        "status": solution.status,
+        "Product_A": solution.product_a,
+        "Product_B": solution.product_b,
+        "Total_Revenue": solution.total_revenue,
+    }
+
+
+def _as_legacy_params(params):
+    if isinstance(params, Mapping):
+        return dict(params)
+    return params.as_legacy_dict()
 
 
 class ResultsHandler:
@@ -15,9 +34,9 @@ class ResultsHandler:
         params (dict): The original parameters used for the optimization.
     '''
 
-    def __init__(self, solution: dict, params: dict):
-        self.solution = solution
-        self.params = params
+    def __init__(self, solution, params):
+        self.solution = _as_legacy_solution(solution)
+        self.params = _as_legacy_params(params)
 
     def format(self):
         '''
@@ -110,27 +129,40 @@ class ResultsHandler:
         xA_opt = solution["Product_A"]
         xB_opt = solution["Product_B"]
 
-        # Determine axis limits based on intercepts and optimal solution
+        # Determine axis limits based on finite intercepts and the optimal solution.
+        # Zero coefficients are valid inputs; they represent vertical constraints
+        # or unconstrained axes and should not make the demo plot crash.
         x_intercept_m1 = cap1 / pa1 if pa1 > 0 else np.inf
         y_intercept_m1 = cap1 / pb1 if pb1 > 0 else np.inf
         x_intercept_m2 = cap2 / pa2 if pa2 > 0 else np.inf
         y_intercept_m2 = cap2 / pb2 if pb2 > 0 else np.inf
 
-        # Max axis limit should comfortably contain all intercepts and optimal point
-        max_x = max(x_intercept_m1, x_intercept_m2, xA_opt, 10) * 1.2
-        max_y = max(y_intercept_m1, y_intercept_m2, xB_opt, 10) * 1.2
+        # Max axis limit should comfortably contain finite intercepts and optimum.
+        max_x = max(
+            value for value in (x_intercept_m1, x_intercept_m2, xA_opt, 10)
+            if np.isfinite(value)
+        ) * 1.2
+        max_y = max(
+            value for value in (y_intercept_m1, y_intercept_m2, xB_opt, 10)
+            if np.isfinite(value)
+        ) * 1.2
 
         x = np.linspace(0, max_x, 500)
 
+        def upper_y(pa, pb, cap):
+            if pb > 0:
+                y = (cap - pa * x) / pb
+                y[y < 0] = np.nan  # Set negative y values to NaN so they don't plot
+                return y
+            if pa > 0:
+                return np.where(pa * x <= cap, max_y, np.nan)
+            return np.full_like(x, max_y)
+
         # Constraint 1: pa1*xA + pb1*xB <= cap1
-        # xB = (cap1 - pa1*xA) / pb1
-        y1 = (cap1 - pa1 * x) / pb1
-        y1[y1 < 0] = np.nan  # Set negative y values to NaN so they don't plot
+        y1 = upper_y(pa1, pb1, cap1)
 
         # Constraint 2: pa2*xA + pb2*xB <= cap2
-        # xB = (cap2 - pa2*xA) / pb2
-        y2 = (cap2 - pa2 * x) / pb2
-        y2[y2 < 0] = np.nan  # Set negative y values to NaN
+        y2 = upper_y(pa2, pb2, cap2)
 
         # Plot constraint lines
         ax.plot(

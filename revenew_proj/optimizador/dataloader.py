@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+import math
+
 import pandas as pd
 from django.core.exceptions import ValidationError
 
@@ -41,8 +45,9 @@ class DataLoader:
             ValidationError: If the CSV file is invalid.
         '''
         try:
-            # Load CSV into DataFrame
-            df = pd.read_csv(self.file)
+            # Load a bounded CSV into a DataFrame. Upload size and extension are
+            # enforced by UploadForm; this parser gate enforces the expected grain.
+            df = pd.read_csv(self.file, nrows=2)
         except Exception as e:
             raise ValidationError(f"Error reading CSV file: {e}")
 
@@ -51,20 +56,23 @@ class DataLoader:
         if missing:
             raise ValidationError(f"Missing required columns: {missing}")
 
-        # Ensure all required columns are numeric
-        if not df[self.REQUIRED_COLUMNS].apply(pd.to_numeric, errors='coerce').notnull().all().all():
-            raise ValidationError(
-                "CSV contains non-numeric values in required columns.")
-
-        # Check that all required values are non-negative
-        if (df[self.REQUIRED_COLUMNS] < 0).any().any():
-            raise ValidationError(
-                "CSV contains negative values in required columns.")
-
         # Optional: check if there is exactly one row
         if len(df) != 1:
             raise ValidationError(
                 "CSV should contain exactly one row of parameters.")
 
+        # Ensure all required columns are numeric and finite.
+        numeric = df[self.REQUIRED_COLUMNS].apply(pd.to_numeric, errors='coerce')
+        if numeric.isnull().any().any():
+            raise ValidationError(
+                "CSV contains non-numeric values in required columns.")
+        if not all(math.isfinite(float(value)) for value in numeric.iloc[0].values):
+            raise ValidationError("CSV contains non-finite values in required columns.")
+
+        # Check that all required values are non-negative
+        if (numeric < 0).any().any():
+            raise ValidationError(
+                "CSV contains negative values in required columns.")
+
         # Return the clean row as a dictionary
-        return df.iloc[0].to_dict()
+        return numeric.iloc[0].to_dict()

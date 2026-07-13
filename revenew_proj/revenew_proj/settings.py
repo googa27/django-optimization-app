@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from urllib.parse import urlsplit
+
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,13 +23,87 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=5$+x7z!krjobsgo@&2spg_gmme6juy*9qe(nki1s8$r@2exjm'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', 'False').lower() in {'1', 'true', 'yes'}
 
-ALLOWED_HOSTS = []
+# SECURITY WARNING: keep the secret key used in production secret!
+ALLOW_INSECURE_DEV_SECRET = os.getenv(
+    'DJANGO_ALLOW_INSECURE_DEV_SECRET', ''
+).lower() in {'1', 'true', 'yes'}
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    if DEBUG or ALLOW_INSECURE_DEV_SECRET:
+        SECRET_KEY = 'django-insecure-dev-only-set-DJANGO_SECRET_KEY-before-deploying'
+    else:
+        raise ImproperlyConfigured(
+            'DJANGO_SECRET_KEY is required when DEBUG=False; set '
+            'DJANGO_ALLOW_INSECURE_DEV_SECRET=1 only for local demo/test runs.'
+        )
+
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,testserver').split(',')
+    if host.strip()
+]
+
+def _parse_csrf_trusted_origins(raw_origins: str) -> list[str]:
+    """Parse DJANGO_CSRF_TRUSTED_ORIGINS as origin URLs.
+
+    Django requires each CSRF trusted origin to include a scheme. For operator
+    convenience, bare host[:port] entries are treated as HTTPS origins. Values
+    that are not origins (unsupported schemes, paths, queries, fragments, or
+    credentials) fail during settings load with a focused configuration error.
+    """
+    trusted_origins: list[str] = []
+    for raw_origin in raw_origins.split(','):
+        origin = raw_origin.strip()
+        if not origin:
+            continue
+        if origin.startswith('//'):
+            raise ImproperlyConfigured(
+                'DJANGO_CSRF_TRUSTED_ORIGINS entries must be origins such as '
+                'https://example.com or bare host[:port] values.'
+            )
+        if '://' not in origin:
+            origin = f'https://{origin}'
+        try:
+            parsed = urlsplit(origin)
+            parsed.port
+        except ValueError as exc:
+            raise ImproperlyConfigured(
+                'DJANGO_CSRF_TRUSTED_ORIGINS entries must be valid http(s) '
+                'origins with optional numeric ports.'
+            ) from exc
+        if (
+            parsed.scheme not in {'http', 'https'}
+            or not parsed.netloc
+            or not parsed.hostname
+            or any(char.isspace() for char in origin)
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.path not in {'', '/'}
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise ImproperlyConfigured(
+                'DJANGO_CSRF_TRUSTED_ORIGINS entries must be http(s) origins '
+                'without paths, queries, fragments, or credentials.'
+            )
+        trusted_origins.append(origin.rstrip('/'))
+    return trusted_origins
+
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = int(os.getenv('OPTIMIZADOR_MAX_UPLOAD_BYTES', '1048576'))
+DATA_UPLOAD_MAX_MEMORY_SIZE = FILE_UPLOAD_MAX_MEMORY_SIZE
+CSRF_TRUSTED_ORIGINS = _parse_csrf_trusted_origins(
+    os.getenv('DJANGO_CSRF_TRUSTED_ORIGINS', '')
+)
+SECURE_SSL_REDIRECT = os.getenv(
+    'DJANGO_SECURE_SSL_REDIRECT', 'False'
+).lower() in {'1', 'true', 'yes'}
+SECURE_HSTS_SECONDS = int(os.getenv('DJANGO_SECURE_HSTS_SECONDS', '0'))
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 
 # Application definition

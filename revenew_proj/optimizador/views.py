@@ -1,44 +1,32 @@
-from django.shortcuts import render
-from django.core.exceptions import ValidationError
+from __future__ import annotations
+
 from django.contrib import messages
+from django.core.exceptions import ValidationError
+from django.shortcuts import render
 
-from .forms import UploadForm
 from .dataloader import DataLoader
-from .optimizer import OptimizationModel
+from .forms import UploadForm
 from .results import ResultsHandler
+from .services import ProductionOptimizationService, ProductionParameters
 
-# Create your views here.
+
+optimization_service = ProductionOptimizationService()
 
 
 def upload_view(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UploadForm(request.POST, request.FILES)
 
         if form.is_valid():
             try:
-                # --- STEP 1: Load and validate uploaded CSV ---
-                csv_file = request.FILES['csv_file']
-                loader = DataLoader(csv_file)
-                params = loader.load()
-
-                # --- STEP 2: Solve the optimization problem ---
-                model = OptimizationModel(params)
-                solution = model.solve()
-
-                # --- STEP 3: Format the result for display ---
-                # MODIFICATION HERE: Pass 'params' to ResultsHandler
-                formatter = ResultsHandler(solution, params)
-                result = formatter.format()
-
-                # --- STEP 4: Render the results page ---
-                return render(request, 'optimizador/results.html', {
-                    'result': result
-                })
-
-            except ValidationError as e:
-                messages.error(request, str(e))
-
+                csv_file = form.cleaned_data["csv_file"]
+                params = ProductionParameters.from_mapping(DataLoader(csv_file).load())
+                solution = optimization_service.solve(params)
+                result = ResultsHandler(solution, params).format()
+                return render(request, "optimizador/results.html", {"result": result})
+            except ValidationError as error:
+                messages.error(request, str(error))
     else:
         form = UploadForm()
 
-    return render(request, 'optimizador/upload.html', {'form': form})
+    return render(request, "optimizador/upload.html", {"form": form})

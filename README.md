@@ -75,12 +75,20 @@ You can upload `revenew_proj/optimization_problem_data.csv` or another one-row C
 
 ## Run tests
 
+The maintained verification route has three parts: the Django unittest suite, the
+pytest-based architecture suite, and the dependency-free architecture checker.
+
 ```bash
 cd revenew_proj
-python manage.py test optimizador
+DJANGO_SECRET_KEY=*** uv run --with-requirements ../requirements.txt python manage.py test optimizador.tests
+cd ..
+uv run --with pytest python -m pytest tests/architecture
+python scripts/check_portfolio_architecture.py
 ```
 
-Source inspection finds 16 test functions and stale expectations around `ResultsHandler(solution)` versus the current `ResultsHandler(solution, params)` constructor, plus template assertions for `Upload CSV` / `This field is required.` text that is not currently rendered. The documented command is the correct route, but this refresh does not claim a clean suite until it is rerun in a prepared Django environment.
+The GitHub Actions workflow at `.github/workflows/portfolio-architecture.yml`
+runs the same checker, installs the app/test dependencies, runs
+`python -m pytest tests/architecture`, then runs the Django app tests.
 
 ## Command-line route status
 
@@ -128,5 +136,5 @@ Generated/updated assets:
 - Continuous variables: no integer-production, setup-cost, demand, inventory, or multi-period constraints.
 - Single-row CSV contract only.
 - No authentication or production deployment hardening.
-- No CI workflow found in this clone.
+- CI covers the portfolio architecture checker, architecture pytest suite, and Django app tests.
 - CLI route is documented as broken/unverified until `ResultsHandler` arity is fixed in `main.py` and executed successfully.
