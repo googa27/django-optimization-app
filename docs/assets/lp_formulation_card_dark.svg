@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="300" viewBox="0 0 980 300" role="img" aria-labelledby="title desc">
+  <title id="title">LP formulation card</title>
+  <desc id="desc">Dark safe card listing the two-product revenue maximization objective, two machine constraints, non-negativity, and the source CSV.</desc>
+  <rect width="980" height="300" fill="#0d1117"/>
+  <rect x="28" y="28" width="924" height="244" rx="18" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+  <text x="54" y="68" fill="#c9d1d9" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" font-weight="700">Source-verified LP formulation</text>
+  <text x="54" y="105" fill="#f97316" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="20">maximize  100 A + 80 B</text>
+  <text x="54" y="145" fill="#65d6ff" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="18">Machine 1: 1.5 A + 1 B &lt;= 8</text>
+  <text x="54" y="180" fill="#b46cff" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="18">Machine 2: 2 A + 1.5 B &lt;= 10</text>
+  <text x="54" y="215" fill="#3fb950" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="18">A &gt;= 0, B &gt;= 0; continuous variables from PuLP LpVariable(lowBound=0)</text>
+  <text x="54" y="250" fill="#8b949e" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="13">Source: revenew_proj/optimization_problem_data.csv and revenew_proj/optimizador/optimizer.py. CLI route is documented separately because main.py is not verified.</text>
+</svg>
