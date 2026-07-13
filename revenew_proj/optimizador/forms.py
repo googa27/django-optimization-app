@@ -11,7 +11,6 @@ ALLOWED_CSV_CONTENT_TYPES = {
     "application/csv",
     "application/vnd.ms-excel",
     "text/plain",
-    "application/octet-stream",
 }
 
 

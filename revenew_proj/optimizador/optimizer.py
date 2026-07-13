@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-from .services import ProductionOptimizationService
+from collections.abc import Mapping
+
+from .services import ProductionOptimizationService, ProductionParameters
 
 
 class OptimizationModel:
     """Compatibility adapter around the pure optimization service."""
 
-    def __init__(self, params: dict):
+    def __init__(self, params: ProductionParameters | Mapping[str, object]):
         self.params = params
         self.service = ProductionOptimizationService()
 

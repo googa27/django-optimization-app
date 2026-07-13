@@ -1,3 +1,7 @@
+import os
+import subprocess
+import sys
+
 from django.conf import settings
 from django.test import SimpleTestCase
 
@@ -16,5 +20,28 @@ class SecuritySettingsTest(SimpleTestCase):
         self.assertLessEqual(settings.FILE_UPLOAD_MAX_MEMORY_SIZE, 1024 * 1024)
         self.assertEqual(
             settings.DATA_UPLOAD_MAX_MEMORY_SIZE,
-            settings.FILE_UPLOAD_MAX_MEMORY_SIZE + 8192,
+            settings.FILE_UPLOAD_MAX_MEMORY_SIZE,
         )
+
+    def test_secure_cookie_defaults_follow_non_debug_mode(self):
+        self.assertTrue(settings.SESSION_COOKIE_SECURE)
+        self.assertTrue(settings.CSRF_COOKIE_SECURE)
+
+    def test_production_settings_require_secret_key(self):
+        env = os.environ.copy()
+        env.pop("DJANGO_SECRET_KEY", None)
+        env.pop("DJANGO_ALLOW_INSECURE_DEV_SECRET", None)
+        env["DJANGO_DEBUG"] = "False"
+        env["DJANGO_SETTINGS_MODULE"] = "revenew_proj.settings"
+
+        result = subprocess.run(
+            [sys.executable, "-c", "import django; django.setup()"],
+            cwd=settings.BASE_DIR,
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("DJANGO_SECRET_KEY is required", result.stderr)

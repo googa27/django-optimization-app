@@ -7,7 +7,7 @@ from django.shortcuts import render
 from .dataloader import DataLoader
 from .forms import UploadForm
 from .results import ResultsHandler
-from .services import ProductionOptimizationService
+from .services import ProductionOptimizationService, ProductionParameters
 
 
 optimization_service = ProductionOptimizationService()
@@ -20,8 +20,8 @@ def upload_view(request):
         if form.is_valid():
             try:
                 csv_file = form.cleaned_data["csv_file"]
-                params = DataLoader(csv_file).load()
-                solution = optimization_service.solve(params).as_legacy_dict()
+                params = ProductionParameters.from_mapping(DataLoader(csv_file).load())
+                solution = optimization_service.solve(params)
                 result = ResultsHandler(solution, params).format()
                 return render(request, "optimizador/results.html", {"result": result})
             except ValidationError as error:

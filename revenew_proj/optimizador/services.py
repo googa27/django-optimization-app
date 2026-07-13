@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 from typing import Mapping
 
 from django.core.exceptions import ValidationError
@@ -39,6 +40,8 @@ class ProductionParameters:
             values = {name: float(params[name]) for name in REQUIRED_PARAMETERS}
         except (TypeError, ValueError) as exc:
             raise ValidationError("Optimization parameters must be numeric.") from exc
+        if any(not math.isfinite(value) for value in values.values()):
+            raise ValidationError("Optimization parameters must be finite numbers.")
         if any(value < 0 for value in values.values()):
             raise ValidationError("Optimization parameters must be non-negative.")
         return cls(

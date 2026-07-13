@@ -45,3 +45,12 @@ class ProductionOptimizationServiceTest(SimpleTestCase):
 
         with self.assertRaises(ValidationError):
             ProductionParameters.from_mapping(params)
+
+    def test_parameter_adapter_rejects_non_finite_values(self):
+        for bad_value in ("nan", "inf", "-inf"):
+            with self.subTest(bad_value=bad_value):
+                params: dict[str, object] = dict(VALID_PARAMS)
+                params["Price_Product_A"] = bad_value
+
+                with self.assertRaises(ValidationError):
+                    ProductionParameters.from_mapping(params)

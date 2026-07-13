@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 
+from django.core.exceptions import ImproperlyConfigured
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,14 +22,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv(
-    'DJANGO_SECRET_KEY',
-    'django-insecure-dev-only-set-DJANGO_SECRET_KEY-before-deploying',
-)
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG', 'False').lower() in {'1', 'true', 'yes'}
+
+# SECURITY WARNING: keep the secret key used in production secret!
+ALLOW_INSECURE_DEV_SECRET = os.getenv(
+    'DJANGO_ALLOW_INSECURE_DEV_SECRET', ''
+).lower() in {'1', 'true', 'yes'}
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    if DEBUG or ALLOW_INSECURE_DEV_SECRET:
+        SECRET_KEY = 'django-insecure-dev-only-set-DJANGO_SECRET_KEY-before-deploying'
+    else:
+        raise ImproperlyConfigured(
+            'DJANGO_SECRET_KEY is required when DEBUG=False; set '
+            'DJANGO_ALLOW_INSECURE_DEV_SECRET=1 only for local demo/test runs.'
+        )
 
 ALLOWED_HOSTS = [
     host.strip()
@@ -36,12 +46,18 @@ ALLOWED_HOSTS = [
 ]
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = int(os.getenv('OPTIMIZADOR_MAX_UPLOAD_BYTES', '1048576'))
-DATA_UPLOAD_MAX_MEMORY_SIZE = FILE_UPLOAD_MAX_MEMORY_SIZE + 8192
+DATA_UPLOAD_MAX_MEMORY_SIZE = FILE_UPLOAD_MAX_MEMORY_SIZE
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
     for origin in os.getenv('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',')
     if origin.strip()
 ]
+SECURE_SSL_REDIRECT = os.getenv(
+    'DJANGO_SECURE_SSL_REDIRECT', 'False'
+).lower() in {'1', 'true', 'yes'}
+SECURE_HSTS_SECONDS = int(os.getenv('DJANGO_SECURE_HSTS_SECONDS', '0'))
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 
 # Application definition

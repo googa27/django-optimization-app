@@ -3,7 +3,7 @@
 <!-- PORTFOLIO-CONSTITUTION:START -->
 ## Portfolio architecture baseline
 
-Source of truth: `docs/ARCHITECTURE.yaml`. Tracking: [Project #24](https://github.com/users/googa27/projects/24), [django-optimization-app issue](https://github.com/googa27/django-optimization-app/issues/1). Profile: `application`; enforcement: `Blocking`.
+Source of truth: `docs/ARCHITECTURE.yaml`. Tracking: [Project #24](https://github.com/users/googa27/projects/24), [django-optimization-app issue](https://github.com/googa27/django-optimization-app/issues/1). Profile: `application`; status: legacy/demo Django application, not production; enforcement: `Blocking`.
 
 ### Research-backed defaults
 
@@ -22,7 +22,7 @@ Source of truth: `docs/ARCHITECTURE.yaml`. Tracking: [Project #24](https://githu
 
 | Capability | Selected route | Alternatives | Boundary / custom-code rule |
 |---|---|---|---|
-| Existing runtime stack | No stable runtime dependency manifest was detected; revival requires a dependency decision table. | Reimplementation from scratch | Preserve public adapters; research maintenance/API/license before additions. |
+| Linear programming optimization | PuLP 3.2.1 | CVXPY; SciPy `linprog`; Google OR-Tools; custom LP solver | `optimizador/services.py` owns PuLP use behind typed DTOs; views and result formatting do not construct solver models. Custom code is limited to validation/composition/adapters. |
 | Architecture contract bootstrap | Python standard-library JSON parser over the JSON subset of YAML 1.2 | Hand-written YAML parser; mandatory platform service | Repo-local dependency-free structural gate; richer maintained tools remain repo-specific. |
 | Import/dependency rules | Existing repo lint/import tools where configured; declarative YAML boundary is authoritative | Custom import framework | Keep custom AST checks narrow; use maintained Import Linter/Tach/Ruff/deptry when warranted. |
 | AI interaction | AGENTS + deterministic CLI/contracts + capability discovery + skills | MCP/plugin in every repo | Escalate only after measured interoperability/lifecycle need. |
@@ -33,7 +33,11 @@ Source of truth: `docs/ARCHITECTURE.yaml`. Tracking: [Project #24](https://githu
 - Human/notebook: Typed optimization service API usable outside views and from notebooks; model value objects may use repr/eq/hash only when lawful.
 - Planned Python protocols: Immutable optimization inputs/results may use __repr__/value equality after typed domain extraction.; Solver execution, database access, and web effects remain named methods.
 - Core posture: No core coupling unless a general FPF optimization contract becomes a real consumer need.
-- Data posture: Validate inputs and separate persistence, optimization model, and rendered outputs.
+- Data posture: Bounded CSV upload -> DataLoader validation -> typed ProductionParameters -> pure PuLP optimization service -> typed OptimizationSolution -> ResultsHandler presentation. Views coordinate only; no uploaded-file persistence is introduced.
+
+### Modernization boundary
+
+Django settings now read deployment-sensitive values from environment variables, default `DEBUG` to false, and set explicit upload size limits. Upload forms enforce `.csv`, content-type, and size boundaries before pandas parsing. Runtime web and CLI flows explicitly adapt the validated CSV row into typed `ProductionParameters`, solve through PuLP behind `ProductionOptimizationService`, and pass a typed `OptimizationSolution` to results formatting. The maintained solver choice is PuLP for this small linear-programming app; custom solver implementation is rejected.
 
 ### Extension and exception discipline
 

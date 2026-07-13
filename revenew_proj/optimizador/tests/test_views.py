@@ -4,6 +4,8 @@ from unittest.mock import patch
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 
+from optimizador.services import OptimizationSolution, ProductionParameters
+
 
 class UploadViewTest(TestCase):
 
@@ -48,7 +50,34 @@ class UploadViewTest(TestCase):
         # Check for text on the form page
         self.assertContains(response, 'Upload Optimization Data')
 
-    # MODIFICATION HERE: Patch DataLoader in 'optimizador.views'
+    @patch('optimizador.views.ResultsHandler')
+    @patch('optimizador.views.optimization_service')
+    @patch('optimizador.views.DataLoader')
+    def test_post_valid_csv_uses_typed_service_result(
+        self, MockDataLoader, mock_optimization_service, MockResultsHandler
+    ):
+        MockDataLoader.return_value.load.return_value = self.valid_params
+        solution = OptimizationSolution(
+            status='Optimal',
+            product_a=60.0,
+            product_b=0.0,
+            total_revenue=1500.0,
+        )
+        mock_optimization_service.solve.return_value = solution
+        MockResultsHandler.return_value.format.return_value = self.formatted_result
+        upload = SimpleUploadedFile(
+            "valid.csv",
+            self.valid_csv_content.encode(),
+            content_type="text/csv",
+        )
+
+        response = self.client.post(self.upload_url, {'csv_file': upload})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'optimizador/results.html')
+        typed_params = mock_optimization_service.solve.call_args.args[0]
+        self.assertIsInstance(typed_params, ProductionParameters)
+        MockResultsHandler.assert_called_once_with(solution, typed_params)
 
     @patch('optimizador.views.DataLoader')
     def test_post_request_invalid_csv_validation_error(self, MockDataLoader):

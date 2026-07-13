@@ -4,19 +4,31 @@
     "owner": "googa27",
     "name": "django-optimization-app",
     "profile": "application",
-    "status": "Product App",
+    "status": "legacy/demo Django application (not production)",
     "project": "https://github.com/users/googa27/projects/24",
     "issue": "https://github.com/googa27/django-optimization-app/issues/1"
   },
   "architecture": {
     "style": "evolutionary, contract-first, repository-specific",
-    "layers": [],
+    "layers": [
+      "Django views/forms",
+      "data loading/validation",
+      "pure optimization service",
+      "results rendering"
+    ],
     "import_boundaries": {
       "authority": "repository-specific existing gates plus this contract",
-      "forbidden": [],
+      "forbidden": [
+        "views must not construct PuLP models directly",
+        "optimization service must not import django.shortcuts/render/templates or persistence models",
+        "results rendering must not solve optimization problems"
+      ],
       "cycle_policy": "acyclic runtime layers unless an exact exception is recorded"
     },
-    "public_api_paths": [],
+    "public_api_paths": [
+      "revenew_proj/optimizador/services.py",
+      "revenew_proj/optimizador/forms.py"
+    ],
     "extension_points": [
       "typed public APIs",
       "deterministic CLI/contracts",
@@ -46,16 +58,19 @@
     "selection_policy": "Prefer well-maintained libraries; record maintenance/API/license evidence and adapter boundary before custom implementation.",
     "decisions": [
       {
-        "capability": "existing runtime stack",
+        "capability": "linear programming optimization",
         "selected": [
-          "no stable runtime manifest detected"
+          "PuLP 3.2.1"
         ],
         "alternatives": [
-          "custom reimplementation"
+          "CVXPY",
+          "SciPy optimize.linprog",
+          "Google OR-Tools",
+          "custom simplex implementation"
         ],
-        "evidence": "pyproject.toml/package.json/requirements and docs/ARCHITECTURE.md",
-        "adapter_boundary": "repository public ports",
-        "custom_code_reason": "domain semantics, composition, adapters, or genuinely missing algorithms only"
+        "evidence": "requirements.txt pins PuLP 3.2.1; PuLP is a maintained Python LP modeling package with open-source licensing suitable for a small linear-production demo. CVXPY/OR-Tools add heavier solver/runtime surface; SciPy linprog is lower-level. Custom LP solver is rejected.",
+        "adapter_boundary": "revenew_proj/optimizador/services.py ProductionOptimizationService and OptimizationModel compatibility adapter",
+        "custom_code_reason": "only domain DTOs, validation composition, and view/result adapters; solver algorithm remains maintained-library owned"
       },
       {
         "capability": "portfolio architecture bootstrap",
@@ -81,7 +96,10 @@
       "capability_discovery": "AGENTS.md plus the architecture checker is the current discovery surface; add a deterministic CLI/capability manifest before new maintained runtime behavior.",
       "skills": "Use/update a repo or class-level Hermes skill for recurring non-trivial workflows",
       "plugin_mcp_policy": "deferred unless stable interfaces and measured multi-client/tool interoperability justify it",
-      "declared_entrypoints": [],
+      "declared_entrypoints": [
+        "DJANGO_SECRET_KEY=test-secret python manage.py test optimizador.tests",
+        "python scripts/check_portfolio_architecture.py"
+      ],
       "decision_ladder": [
         "AGENTS.md and linked contracts",
         "typed importable API and deterministic CLI/capability manifest",
@@ -93,7 +111,9 @@
     },
     "human": {
       "interaction": "Typed optimization service API usable outside views and from notebooks; model value objects may use repr/eq/hash only when lawful.",
-      "public_api_paths": [],
+      "public_api_paths": [
+        "revenew_proj/optimizador/services.py"
+      ],
       "notebook_policy": "deterministic public-synthetic notebook/example for active libraries; explicit inapplicable/revival decision otherwise",
       "dunder_policy": "Only documented lawful Python/NumPy/IPython protocols with algebraic/parity tests; named methods for policy, effects, diagnostics, I/O, or ambiguity",
       "dunder_plan": [
@@ -117,7 +137,7 @@
     ],
     "commands": {
       "setup": "uv run --with-requirements requirements.txt python -c \"import django, pulp; print(django.get_version())\"",
-      "test": "cd revenew_proj && uv run --with-requirements ../requirements.txt python manage.py test optimizador.tests",
+      "test": "cd revenew_proj && DJANGO_SECRET_KEY=test-secret uv run --with-requirements ../requirements.txt python manage.py test optimizador.tests",
       "lint": "No repository-wide lint command is currently declared; the architecture gate is blocking and a future modernization must add Ruff.",
       "architecture": "python scripts/check_portfolio_architecture.py"
     },
@@ -126,7 +146,7 @@
   },
   "data": {
     "consumes_data": true,
-    "architecture": "Validate inputs and separate persistence, optimization model, and rendered outputs.",
+    "architecture": "Validated bounded CSV upload -> DataLoader schema/grain checks -> typed ProductionParameters -> pure PuLP optimization service -> typed OptimizationSolution -> ResultsHandler presentation. Views coordinate only and do not own solver logic or persistence.",
     "required_controls": [
       "source registry",
       "typed contracts",
@@ -144,11 +164,11 @@
       "ui_and_artifacts": "No core coupling unless a general FPF optimization contract becomes a real consumer need."
     },
     "source_registry_plan": [
-      "validated user inputs and application database records"
+      "bounded user-uploaded one-row CSV with explicit numeric production parameters; no persistence of uploaded files in current app; DEBUG=False requires DJANGO_SECRET_KEY and secure cookies; transport redirect/HSTS are explicit deployment knobs"
     ],
     "flow": "source registry -> typed acquisition -> immutable Bronze -> canonical Silver -> curated Gold/features -> formulation/model -> governed output -> read-only UI/API/notebook",
     "storage_and_replay": "Immutable raw/content-addressed inputs; canonical typed products; idempotent replay by source identity and effective/vintage time where applicable.",
-    "quality_and_lineage": "Validate schema, grain, units, classification, lineage, freshness, licence, and content identity before consumption; fail closed on missing evidence."
+    "quality_and_lineage": "UploadForm enforces extension/content-type/size and rejects generic octet-stream uploads; DataLoader and service enforce required columns, one-row grain, finite numeric non-negative values; service owns optimization and returns typed OptimizationSolution; ResultsHandler owns display."
   },
   "governance": {
     "architecture_source": "docs/ARCHITECTURE.yaml",

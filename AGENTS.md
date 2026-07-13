@@ -2,7 +2,7 @@
 
 ## Purpose and safety
 
-`django-optimization-app` is classified as `Product App` under Portfolio Project #24. Preserve public/upstream compatibility, privacy, and evidence boundaries; do not infer maturity beyond executable tests.
+`django-optimization-app` is a legacy/demo Django application under Portfolio Project #24, not a production revenue-optimization platform. Preserve public/upstream compatibility, privacy, and evidence boundaries; do not infer maturity beyond executable tests.
 
 ## Canonical documentation
 
@@ -47,12 +47,12 @@ For data-consuming work, design `source registry -> typed acquisition -> immutab
 - `ui_and_artifacts` owns reusable audience-aware rendering and artifact QA.
 - Consume stable public contracts/CLIs, not repository internals. Keep canonical names theoretical/general rather than deal/product-specific.
 
-Repository posture: No core coupling unless a general FPF optimization contract becomes a real consumer need. Data posture: Validate inputs and separate persistence, optimization model, and rendered outputs.
+Repository posture: Legacy/demo Django application; no production maturity claim and no archive toggle. Core posture: No core coupling unless a general FPF optimization contract becomes a real consumer need. Data posture: Bounded CSV upload -> DataLoader validation -> typed ProductionParameters -> pure PuLP optimization service -> typed OptimizationSolution -> ResultsHandler presentation.
 
 ### Exact commands
 
 - Setup: `uv run --with-requirements requirements.txt python -c "import django, pulp; print(django.get_version())"`
-- Tests: `cd revenew_proj && uv run --with-requirements ../requirements.txt python manage.py test optimizador.tests`
+- Tests: `cd revenew_proj && DJANGO_SECRET_KEY=test-secret uv run --with-requirements ../requirements.txt python manage.py test optimizador.tests`
 - Lint/format: `No repository-wide lint command is currently declared; the architecture gate is blocking and a future modernization must add Ruff.`
 - Portfolio architecture: `python scripts/check_portfolio_architecture.py`
 
