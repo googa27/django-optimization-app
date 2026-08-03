@@ -35,7 +35,7 @@ Visual provenance: generated with `uv run --python 3.13 --with matplotlib==3.10.
 ## Tech stack
 
 - Python 3.10+ expected by Django 5.2; Python 3.13 was used for README visual generation.
-- Django 5.2.4, as pinned in `requirements.txt` and confirmed by `revenew_proj/revenew_proj/settings.py`.
+- Django 5.2.16, as pinned in `requirements.txt` and confirmed by `revenew_proj/revenew_proj/settings.py`.
 - PuLP for the LP model.
 - pandas for CSV loading and validation.
 - matplotlib for result plots.
