@@ -2,7 +2,7 @@
 
 Educational Django + PuLP demo for a two-product linear-programming problem. A user uploads one CSV row with machine times, available machine hours, and product prices; the app solves the continuous LP and displays the result.
 
-Current maturity: small teaching/demo app. There is no CI workflow in this clone, the CLI route is currently broken/unverified, and the model is continuous LP rather than integer production planning.
+Current maturity: small teaching/demo app. The checked-in CI workflow covers architecture and Django tests, the CLI route below is now exercised locally, and the model is continuous LP rather than integer production planning.
 
 ## Source-verified LP example
 
@@ -35,7 +35,7 @@ Visual provenance: generated with `uv run --python 3.13 --with matplotlib==3.10.
 ## Tech stack
 
 - Python 3.10+ expected by Django 5.2; Python 3.13 was used for README visual generation.
-- Django 5.2.4, as pinned in `requirements.txt` and confirmed by `revenew_proj/revenew_proj/settings.py`.
+- Django 5.2.16, as pinned in `requirements.txt` and confirmed by `revenew_proj/revenew_proj/settings.py`.
 - PuLP for the LP model.
 - pandas for CSV loading and validation.
 - matplotlib for result plots.
@@ -54,7 +54,7 @@ source rvn_venv/bin/activate  # macOS/Linux
 pip install -r requirements.txt
 ```
 
-Note: this repository's `requirements.txt` is UTF-16 encoded in the current clone. If a tool cannot read it, decode or regenerate it before installing.
+Note: this repository's `requirements.txt` is plain text in the current clone. If a future tool reports an encoding error, verify the file before assuming the documented commands are broken.
 
 ## Run the web app
 
@@ -92,16 +92,23 @@ runs the same checker, installs the app/test dependencies, runs
 
 ## Command-line route status
 
-Broken/unverified as of this refresh:
+Verified locally in this refresh:
 
 ```bash
 cd revenew_proj
-python main.py optimization_problem_data.csv
+DJANGO_SECRET_KEY=*** uv run --with-requirements ../requirements.txt python main.py optimization_problem_data.csv
 ```
 
-Reason: `revenew_proj/main.py` calls `ResultsHandler(solution)`, but `revenew_proj/optimizador/results.py` defines `ResultsHandler(solution, params)`. The Django view uses the two-argument form. Until `main.py` is fixed and exercised, treat the CLI route and the previous CLI output block as unverified.
+Expected output for the checked-in sample:
 
-The root-level command from the old README was also path-wrong because there is no root `manage.py` or root `main.py`.
+```text
+Optimization status: Optimal
+Product A: 0.0
+Product B: 6.67
+Total Revenue: $533.33
+```
+
+The root-level command from the old README was path-wrong because there is no root `manage.py` or root `main.py`.
 
 ## CSV format example
 
@@ -137,4 +144,4 @@ Generated/updated assets:
 - Single-row CSV contract only.
 - No authentication or production deployment hardening.
 - CI covers the portfolio architecture checker, architecture pytest suite, and Django app tests.
-- CLI route is documented as broken/unverified until `ResultsHandler` arity is fixed in `main.py` and executed successfully.
+- CLI route is exercised by the documented command above and currently solves the checked-in sample CSV.
